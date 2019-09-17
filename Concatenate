@@ -1,0 +1,24 @@
+//https://qlikview.tech.blog/2017/01/16/concatenate-no-concatenate-and-auto-concatenate
+//The names of the fields must be exactly the same.
+//Unless a table name of a previously loaded table is specified in the concatenate statement
+//the concatenate prefix uses the last previously created table.
+
+TableA:
+LOAD * INLINE [
+    F1, F2
+    1, A
+    2, B
+    3, C
+    3, Cbis
+];
+
+NoConcatenate
+
+TableB:
+LOAD * INLINE [
+    F1, F2, F3
+    1, I, a
+    2, II, b
+    4, IV, c
+    5, V
+];
