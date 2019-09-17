@@ -15,3 +15,30 @@ LOAD * INLINE [
     1, xx
     4, yy
 ];
+
+
+//Loading and joining from resident tables
+Table1:
+LOAD * INLINE [
+    A, B
+    1, aa
+    2, bb
+    3, cc
+];
+
+
+Table2:
+LOAD * INLINE [
+    A, C
+    1, xx
+    4, yy
+];
+
+
+VTable:
+
+LOAD * Resident Table1;
+
+inner keep LOAD * Resident Table2;
+
+Drop Tables Table1,Table2;
