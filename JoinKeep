@@ -1,0 +1,17 @@
+//https://help.qlik.com/en-US/qlikview/November2017/Subsystems/Client/Content/Scripting/combine-tables-join-keep.htm
+Table1:
+LOAD * INLINE [
+    A, B
+    1, aa
+    2, bb
+    3, cc
+];
+
+inner Keep
+
+Table2:
+LOAD * INLINE [
+    A, C
+    1, xx
+    4, yy
+];
