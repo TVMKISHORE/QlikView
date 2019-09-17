@@ -1,0 +1,31 @@
+//IntervalMatch
+EventLog:
+
+LOAD * Inline [
+
+Time, Event, Comment
+00:00, 0, Start of shift 1
+01:18, 1, Line stop
+02:23, 2, Line restart 50%
+04:15, 3, Line speed 100%
+08:00, 4, Start of shift 2
+11:43, 5, End of production
+];
+
+
+OrderLog:
+LOAD * INLINE [
+Start, End, Order
+01:00, 03:35, A
+02:30, 07:58, B
+03:04, 10:27, C
+07:23, 11:43, D
+];
+
+
+//Link the field Time to the time intervals defined by the fields Start and End.
+
+Inner Join IntervalMatch ( Time )
+ 
+LOAD Start, End
+Resident OrderLog;
