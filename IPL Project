@@ -1,0 +1,61 @@
+Binary [c:\users\kishore.thadiboyina\documents\qlikview\IPL_extract.qvw];
+
+SET ThousandSep=',';
+SET DecimalSep='.';
+SET MoneyThousandSep=',';
+SET MoneyDecimalSep='.';
+SET MoneyFormat='$#,##0.00;($#,##0.00)';
+SET TimeFormat='h:mm:ss TT';
+SET DateFormat='M/D/YYYY';
+SET TimestampFormat='M/D/YYYY h:mm:ss[.fff] TT';
+SET FirstWeekDay=6;
+SET BrokenWeeks=1;
+SET ReferenceDay=0;
+SET FirstMonthOfYear=1;
+SET CollationLocale='en-US';
+SET MonthNames='Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec';
+SET LongMonthNames='January;February;March;April;May;June;July;August;September;October;November;December';
+SET DayNames='Mon;Tue;Wed;Thu;Fri;Sat;Sun';
+SET LongDayNames='Monday;Tuesday;Wednesday;Thursday;Friday;Saturday;Sunday';
+
+
+Teams:
+load DISTINCT batting_team Resident BallbyBall;
+store Teams into Teams.qvd;
+
+T1:
+load batsman, match_id, SUM(total_runs) as totalruns , count('*') as balls 
+Resident BallbyBall group by batsman,match_id;  
+
+T2:
+load batsman, match_id,totalruns,balls, 
+if(totalruns>25,5,0) as mile5,
+if(totalruns>50,15,0) as mile15,
+if(totalruns>75,30,0) as mile30,
+if(totalruns>100,50,0) as mile50
+Resident T1;
+left join
+load batsman, match_id, if(count('*')>0,count('*')*1,0) as fours_points Resident BallbyBall where total_runs=4 Group by batsman, match_id ;
+left join
+load batsman, match_id, if(count('*')>0,count('*')*2,0) as sixpoints Resident BallbyBall where total_runs=6 Group by batsman, match_id ;
+
+T3:
+load batsman, match_id,totalruns,balls,
+   if(isnull(fours_points),0,fours_points) as NumFours,
+   if(isnull(sixpoints),0,sixpoints/2) as numSix,
+   totalruns+mile5+mile15+mile30+mile50+if(IsNull(fours_points),0,fours_points)+if(isnull(sixpoints),0,sixpoints) as Milestones Resident T2;
+store T3 into BatsmanMiles.qvd;
+
+
+batsman:
+load DISTINCT batsman Resident BallbyBall;
+store batsman into batsman.qvd;
+
+bowler:
+load DISTINCT bowler Resident BallbyBall;
+store bowler into bowler.qvd;
+
+Matches:
+load DISTINCT match_id Resident BallbyBall;
+store Matches into Matches.qvd;
+
